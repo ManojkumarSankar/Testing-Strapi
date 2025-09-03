@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './BlogList.css';
 
@@ -10,11 +10,7 @@ const BlogList = () => {
   // This will be configured with your Strapi URL later
   const STRAPI_URL = process.env.REACT_APP_STRAPI_URL || 'http://localhost:1337';
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(`${STRAPI_URL}/api/blogs?populate=*`);
@@ -26,7 +22,11 @@ const BlogList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [STRAPI_URL]);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [fetchBlogs]);
 
   if (loading) {
     return <div className="loading">Loading blogs...</div>;
